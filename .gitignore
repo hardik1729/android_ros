@@ -3,7 +3,6 @@ build
 devel
 .idea
 .gradle
-*.rosinstall
 src/CMakeLists.txt
 *.log
 *.pyc
