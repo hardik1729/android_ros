@@ -2,6 +2,4 @@
 *build
 devel
 *.rosinstall
-*.idea
-*.gradle
 *.log
