@@ -4,3 +4,5 @@ devel
 *.rosinstall
 src/CMakeLists.txt
 *.log
+*.bin
+*.lock
