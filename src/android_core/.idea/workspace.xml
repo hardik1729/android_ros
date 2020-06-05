@@ -13,23 +13,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="dde2a147-ac36-4d84-a158-f603c301b733" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/buildAll.sh" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/buildAll.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/local.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android_sensors_driver/src/org/ros/android/android_sensors_driver/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/android_sensors_driver/src/org/ros/android/android_sensors_driver/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/buildscript.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/buildscript.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../../.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="HNB4C2UU" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -43,7 +33,7 @@
     </system>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="ProjectId" id="1chv7LU1TjaqMd8AWLaE9LMxwOd" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -54,7 +44,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/opencv3-android-sdk-with-contrib/OpenCV-android-sdk/sdk/java" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Dependencies" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
