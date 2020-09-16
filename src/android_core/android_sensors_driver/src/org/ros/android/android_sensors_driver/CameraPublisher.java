@@ -34,6 +34,8 @@ import android.hardware.Camera;
 import android.util.Log;
 
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
+import org.opencv.android.CameraActivity;
+import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.android.OpenCVLoader;
@@ -51,6 +53,9 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
+
+import java.util.Collections;
+import java.util.List;
 
 import sensor_msgs.CameraInfo;
 import sensor_msgs.CompressedImage;
@@ -80,7 +85,7 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
     @SuppressWarnings("deprecation")
     protected final int FRONT = Camera.CameraInfo.CAMERA_FACING_FRONT;
     public MainActivity mainActivity;
-
+    public String topic="android/camera";
 
     public CameraPublisher() {
     }
@@ -98,10 +103,10 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
     public void onStart(final ConnectedNode node) {
         this.node = node;
         NameResolver resolver;
-        resolver = node.getResolver().newChild("android/camera");
+        resolver = node.getResolver().newChild(topic);
         imagePublisher = node.newPublisher(resolver.resolve("image/compressed"), CompressedImage._TYPE);
         cameraInfoPublisher = node.newPublisher(resolver.resolve("camera_info"), CameraInfo._TYPE);
-        rawImagePublisher = node.newPublisher(resolver.resolve("image_raw"), Image._TYPE);
+//        rawImagePublisher = node.newPublisher(resolver.resolve("image_raw"), Image._TYPE);
         Log.i(TAG, "called onStart");
     }
 

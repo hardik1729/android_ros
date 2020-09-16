@@ -21,12 +21,12 @@ dependencies {
 apply plugin: 'com.android.application'
 
 android {
-  compileSdkVersion 10
+  compileSdkVersion 26
 
   defaultConfig {
     minSdkVersion 10
     applicationId "org.ros.android.android_tutorial_camera"
-    targetSdkVersion 10
+    targetSdkVersion 26
     versionCode 1
     versionName "1.0"
   }

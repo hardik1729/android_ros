@@ -21,7 +21,7 @@ task javadoc(type: Javadoc) {
     (it.name != 'docs') ? it : null
   }
   source javaProjects.collect { fileTree(dir: "${it.projectDir}/src/main/java") }
-  classpath = files(javaProjects.collect { it.configurations.compile })
+//  classpath = files(javaProjects.collect { it.configurations.compile })
   destinationDir = new File("${buildDir}/html", 'javadoc')
 }
 

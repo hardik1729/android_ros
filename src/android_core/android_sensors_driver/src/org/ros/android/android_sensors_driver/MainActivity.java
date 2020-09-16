@@ -16,6 +16,7 @@
 
 package org.ros.android.android_sensors_driver;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -28,12 +29,15 @@ import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.widget.Toast;
 
+import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
@@ -48,6 +52,8 @@ import android.view.WindowManager;
 import android.view.MenuInflater;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author chadrockey@gmail.com (Chad Rockey)
@@ -57,10 +63,10 @@ import java.net.URI;
 
 public class MainActivity extends RosActivity
 {
-    static {
-        if(!OpenCVLoader.initDebug());
-            Log.d("OpenCVLoader","unable to load opencv");
-    }
+//    static {
+//        if(!OpenCVLoader.initDebug());
+//            Log.d("OpenCVLoader","unable to load opencv");
+//    }
     public static final int VIEW_MODE_RGBA = 0;
     public static final int VIEW_MODE_GRAY = 1;
     public static final int VIEW_MODE_CANNY = 2;
@@ -70,8 +76,8 @@ public class MainActivity extends RosActivity
     public static int viewMode = VIEW_MODE_RGBA;
     public static int imageCompression = IMAGE_TRANSPORT_COMPRESSION_JPEG;
 
-    public static int imageJPEGCompressionQuality = 80;
-    public static int imagePNGCompressionQuality = 3;
+    public static int imageJPEGCompressionQuality = 100;
+    public static int imagePNGCompressionQuality = 1;
 
     public static int mCameraId = 0;
     private NavSatFixPublisher fix_pub;
@@ -81,10 +87,30 @@ public class MainActivity extends RosActivity
     private IlluminancePublisher illuminance_pub;
     private TemperaturePublisher temperature_pub;
     private CameraPublisher cam_pub = new CameraPublisher();
+    private CameraPublisher cam_pub2 = new CameraPublisher();
     private CameraBridgeViewBase mOpenCvCameraView;
+    private CameraBridgeViewBase mOpenCvCameraView2;
 
     private LocationManager mLocationManager;
     private SensorManager mSensorManager;
+
+    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i("Finally", "OpenCV loaded successfully");
+                    mOpenCvCameraView.enableView();
+                    mOpenCvCameraView2.enableView();
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
 
 
     public MainActivity()
@@ -96,6 +122,10 @@ public class MainActivity extends RosActivity
     protected void onPause()
     {
         super.onPause();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+        if(mOpenCvCameraView2 != null)
+            mOpenCvCameraView2.disableView();
     }
 
     @Override
@@ -110,6 +140,14 @@ public class MainActivity extends RosActivity
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(cam_pub);
+        mOpenCvCameraView.setCameraIndex(mCameraId);
+        mOpenCvCameraView.setCameraPermissionGranted();
+
+        mOpenCvCameraView2 = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView2);
+        mOpenCvCameraView2.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView2.setCvCameraViewListener(cam_pub2);
+        mOpenCvCameraView2.setCameraIndex(mCameraId+1);
+        mOpenCvCameraView2.setCameraPermissionGranted();
 
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
@@ -119,6 +157,21 @@ public class MainActivity extends RosActivity
     protected void onResume()
     {
         super.onResume();
+        if (!OpenCVLoader.initDebug()) {
+            Log.d("finally", "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, this, mLoaderCallback);
+        } else {
+            Log.d("finally", "OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        if (mOpenCvCameraView != null)
+            mOpenCvCameraView.disableView();
+        if (mOpenCvCameraView2 != null)
+            mOpenCvCameraView2.disableView();
     }
 
 
@@ -197,7 +250,16 @@ public class MainActivity extends RosActivity
             nodeConfiguration7.setMasterUri(masterURI);
             nodeConfiguration7.setNodeName("android_sensors_driver_camera");
             cam_pub.mainActivity = this;
+            cam_pub.topic="android/camera1";
             nodeMainExecutor.execute(this.cam_pub, nodeConfiguration7);
+
+            mOpenCvCameraView2.enableView();
+            NodeConfiguration nodeConfiguration8 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+            nodeConfiguration8.setMasterUri(masterURI);
+            nodeConfiguration8.setNodeName("android_sensors_driver_camera2");
+            cam_pub2.mainActivity = this;
+            cam_pub2.topic="android/camera2";
+            nodeMainExecutor.execute(this.cam_pub2, nodeConfiguration8);
         }
     }
 

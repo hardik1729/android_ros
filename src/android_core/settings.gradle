@@ -24,7 +24,12 @@ include "android_tutorial_map_viewer"
 include "android_tutorial_pubsub"
 include "android_tutorial_teleop"
 include "android_sensors_driver"
-include "openCVLibrary340dev"
+//include "openCVLibrary340dev"
+def opencvsdk='../../../OpenCV-android-sdk-org'
+//def opencvsdk='/<path to OpenCV-android-sdk>'
+//println opencvsdk
+include ':opencv'
+project(':opencv').projectDir = new File(opencvsdk + '/sdk')
 include "docs"
 
 // TODO(damonkohler): The following projects are not included in the

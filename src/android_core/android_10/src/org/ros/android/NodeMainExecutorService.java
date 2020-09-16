@@ -103,7 +103,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
   public void onCreate() {
     handler = new Handler();
     PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+    wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, ":"+TAG);
     wakeLock.acquire();
     int wifiLockType = WifiManager.WIFI_MODE_FULL;
     try {
@@ -112,7 +112,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
       // We must be running on a pre-Honeycomb device.
       Log.w(TAG, "Unable to acquire high performance wifi lock.");
     }
-    WifiManager wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
     wifiLock = wifiManager.createWifiLock(wifiLockType, TAG);
     wifiLock.acquire();
   }
