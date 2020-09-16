@@ -1,0 +1,3 @@
+/home/hardik/android_ros/src/android_core/OpenCV-android-sdk/sdk/.externalNativeBuild/cmake/debug/x86/CMakeFiles/rebuild_cache.dir
+/home/hardik/android_ros/src/android_core/OpenCV-android-sdk/sdk/.externalNativeBuild/cmake/debug/x86/CMakeFiles/edit_cache.dir
+/home/hardik/android_ros/src/android_core/OpenCV-android-sdk/sdk/.externalNativeBuild/cmake/debug/x86/CMakeFiles/opencv_jni_shared.dir

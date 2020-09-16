@@ -25,7 +25,7 @@ include "android_tutorial_pubsub"
 include "android_tutorial_teleop"
 include "android_sensors_driver"
 //include "openCVLibrary340dev"
-def opencvsdk='../../../OpenCV-android-sdk-org'
+def opencvsdk='./OpenCV-android-sdk'
 //def opencvsdk='/<path to OpenCV-android-sdk>'
 //println opencvsdk
 include ':opencv'
