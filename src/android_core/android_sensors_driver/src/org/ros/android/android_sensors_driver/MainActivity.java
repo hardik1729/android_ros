@@ -94,6 +94,8 @@ public class MainActivity extends RosActivity
     private LocationManager mLocationManager;
     private SensorManager mSensorManager;
 
+    NodeMainExecutor node;
+
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -174,10 +176,10 @@ public class MainActivity extends RosActivity
             mOpenCvCameraView2.disableView();
     }
 
-
     @Override
     protected void init(NodeMainExecutor nodeMainExecutor)
     {
+        node=nodeMainExecutor;
         URI masterURI = getMasterUri();
         //masterURI = URI.create("http://192.168.15.247:11311/");
         //masterURI = URI.create("http://10.0.1.157:11311/");
