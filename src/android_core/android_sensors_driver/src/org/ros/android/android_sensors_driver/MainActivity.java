@@ -211,6 +211,7 @@ public class MainActivity extends RosActivity
             nodeConfiguration2.setMasterUri(masterURI);
             nodeConfiguration2.setNodeName("android_sensors_driver_nav_sat_fix");
             this.fix_pub = new NavSatFixPublisher(mLocationManager);
+            fix_pub.mainActivity=this;
             nodeMainExecutor.execute(this.fix_pub, nodeConfiguration2);
         }
 

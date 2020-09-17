@@ -29,18 +29,26 @@
 
 package org.ros.android.android_sensors_driver;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import org.ros.namespace.GraphName;
 import org.ros.node.ConnectedNode;
 import org.ros.message.Time;
+
 import sensor_msgs.NavSatFix;
 import sensor_msgs.NavSatStatus;
+
 import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
@@ -51,26 +59,38 @@ import org.ros.node.topic.Publisher;
  */
 public class NavSatFixPublisher implements NodeMain {
 
-  private NavSatThread navSatThread;
-  private LocationManager locationManager;
-  private NavSatListener navSatFixListener;
-  private Publisher<NavSatFix> publisher;
-  
-  private class NavSatThread extends Thread {
-	  LocationManager locationManager;
-	  NavSatListener navSatListener;
-	  private Looper threadLooper;
-	  
-	  private NavSatThread(LocationManager locationManager, NavSatListener navSatListener){
-		  this.locationManager = locationManager;
-		  this.navSatListener = navSatListener;
-	  }
-	  
-	    public void run() {
-	    	Looper.prepare();
-	    	threadLooper = Looper.myLooper();
-	    	this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this.navSatListener);
-	    	Looper.loop();
+	private NavSatThread navSatThread;
+	private LocationManager locationManager;
+	private NavSatListener navSatFixListener;
+	private Publisher<NavSatFix> publisher;
+	public MainActivity mainActivity;
+
+	private class NavSatThread extends Thread {
+		LocationManager locationManager;
+		NavSatListener navSatListener;
+		private Looper threadLooper;
+
+		private NavSatThread(LocationManager locationManager, NavSatListener navSatListener) {
+			this.locationManager = locationManager;
+			this.navSatListener = navSatListener;
+		}
+
+		@TargetApi(Build.VERSION_CODES.M)
+		public void run() {
+			Looper.prepare();
+			threadLooper = Looper.myLooper();
+			if (mainActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && mainActivity.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+				// TODO: Consider calling
+				//    Activity#requestPermissions
+				// here to request the missing permissions, and then overriding
+				//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+				//                                          int[] grantResults)
+				// to handle the case where the user grants the permission. See the documentation
+				// for Activity#requestPermissions for more details.
+				return;
+			}
+			this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this.navSatListener);
+			Looper.loop();
 	    }
 	    
 	    public void shutdown(){
@@ -92,7 +112,7 @@ public class NavSatFixPublisher implements NodeMain {
       this.currentStatus = NavSatStatus.STATUS_FIX; // Default to fix until we are told otherwise.
     }
 
-//	@Override
+	@Override
 	public void onLocationChanged(Location location)
 	{
 		NavSatFix fix = this.publisher.newMessage();
@@ -113,15 +133,15 @@ public class NavSatFixPublisher implements NodeMain {
 		publisher.publish(fix);
 	}
 
-//	@Override
+	@Override
 	public void onProviderDisabled(String provider) {
 	}
 
-//	@Override
+	@Override
 	public void onProviderEnabled(String provider) {
 	}
 
-//	@Override
+	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		switch (status) {
 		case LocationProvider.OUT_OF_SERVICE:
@@ -141,7 +161,7 @@ public class NavSatFixPublisher implements NodeMain {
 	  this.locationManager = manager;
   }
 
-//@Override
+@Override
 public void onStart(ConnectedNode node)
 {
   try
@@ -164,7 +184,7 @@ public void onStart(ConnectedNode node)
   }
 }
 
-//@Override
+@Override
 public void onShutdown(Node arg0) {
 	if(this.navSatThread == null){
   	  	return;
@@ -178,7 +198,7 @@ public void onShutdown(Node arg0) {
 	}
 }
 
-//@Override
+@Override
 public void onShutdownComplete(Node arg0) {
 }
 

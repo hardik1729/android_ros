@@ -20,6 +20,7 @@ dependencies {
   compile "org.ros.rosjava_core:rosjava:0.2.0"
   compile "org.ros.rosjava_core:rosjava_tutorial_pubsub:[0,)"
   compile 'com.android.support:support-v4:21.0.0'
+    compile 'androidx.constraintlayout:constraintlayout:1.1.3'
   compile project(':android_15')
 //  compile project(':openCVLibrary340dev')
   compile project(':opencv')
