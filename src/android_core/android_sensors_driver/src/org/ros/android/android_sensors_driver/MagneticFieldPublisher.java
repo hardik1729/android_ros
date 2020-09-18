@@ -58,13 +58,14 @@ public class MagneticFieldPublisher implements NodeMain
   private SensorManager sensorManager;
   private Publisher<MagneticField> publisher;
   private int sensorDelay;
+  public String topic="android/magnetic_field";
   
   private class MagneticFieldThread extends Thread
   {
 	  private final SensorManager sensorManager;
 	  private SensorListener sensorListener;
 	  private Looper threadLooper;
-	  
+
 
 	  private final Sensor mfSensor;
 	  
@@ -156,7 +157,7 @@ public class MagneticFieldPublisher implements NodeMain
 			
 			if(mfList.size() > 0)
 			{
-				this.publisher = node.newPublisher("android/magnetic_field", "sensor_msgs/MagneticField");
+				this.publisher = node.newPublisher(topic, "sensor_msgs/MagneticField");
 				this.sensorListener = new SensorListener(this.publisher);
 				this.mfThread = new MagneticFieldThread(this.sensorManager, this.sensorListener);
 				this.mfThread.start();		

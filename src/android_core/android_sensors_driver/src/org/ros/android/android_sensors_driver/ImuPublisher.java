@@ -58,6 +58,7 @@ public class ImuPublisher implements NodeMain
   private SensorManager sensorManager;
   private Publisher<Imu> publisher;
   private int sensorDelay;
+  public String topic="android/imu";
   
   private class ImuThread extends Thread
   {
@@ -210,7 +211,7 @@ public class ImuPublisher implements NodeMain
   {
 	  try
 	  {
-			this.publisher = node.newPublisher("android/imu", "sensor_msgs/Imu");
+			this.publisher = node.newPublisher(topic, "sensor_msgs/Imu");
 			// 	Determine if we have the various needed sensors
 			boolean hasAccel = false;
 			boolean hasGyro = false;

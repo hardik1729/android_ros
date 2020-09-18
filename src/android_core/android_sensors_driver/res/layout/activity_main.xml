@@ -17,24 +17,99 @@
 
     <org.opencv.android.JavaCameraView
         android:id="@+id/HelloOpenCvView"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
+        android:layout_width="640px"
+        android:layout_height="480px"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone"/>
+    <CheckBox
+        android:id="@+id/camera1_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/HelloOpenCvView"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView" />
+    <EditText
+        android:id="@+id/camera1_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="android/camera1"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/camera1_box"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView" />
+    <EditText
+        android:id="@+id/camID1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="camID"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/camera1_text"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView" />
+    <CheckBox
+        android:id="@+id/imu_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/HelloOpenCvView"
+        app:layout_constraintBottom_toBottomOf="parent" />
+    <EditText
+        android:id="@+id/imu_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="android/imu"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/imu_box"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <org.opencv.android.JavaCameraView
         android:id="@+id/HelloOpenCvView2"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
+        android:layout_width="640px"
+        android:layout_height="480px"
         app:layout_constraintStart_toStartOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone"/>
     <CheckBox
+        android:id="@+id/camera2_box"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toStartOf="@id/HelloOpenCvView2"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView2" />
+    <EditText
+        android:id="@+id/camera2_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="android/camera2"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/camera2_box"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView2" />
+    <EditText
+        android:id="@+id/camID2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="camID"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/camera2_text"
+        app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView2" />
+    <CheckBox
+        android:id="@+id/gps_box"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/HelloOpenCvView2"
+        app:layout_constraintBottom_toBottomOf="parent" />
+    <EditText
+        android:id="@+id/gps_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="android/fix"
+        android:textColor="#ffffff"
+        android:textCursorDrawable="@null"
+        app:layout_constraintStart_toEndOf="@id/gps_box"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

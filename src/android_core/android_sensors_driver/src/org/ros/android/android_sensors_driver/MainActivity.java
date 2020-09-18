@@ -17,22 +17,37 @@
 package org.ros.android.android_sensors_driver;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -51,7 +66,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.MenuInflater;
 
+import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -79,7 +96,11 @@ public class MainActivity extends RosActivity
     public static int imageJPEGCompressionQuality = 100;
     public static int imagePNGCompressionQuality = 1;
 
-    public static int mCameraId = 0;
+    private int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+    private int sensorDelay = 20000; // 20,000 us == 50 Hz for Android 3.1 and above
+
+    public static int mCameraId1 = 0;
+    public static int mCameraId2 = 1;
     private NavSatFixPublisher fix_pub;
     private ImuPublisher imu_pub;
     private MagneticFieldPublisher magnetic_field_pub;
@@ -94,7 +115,7 @@ public class MainActivity extends RosActivity
     private LocationManager mLocationManager;
     private SensorManager mSensorManager;
 
-    NodeMainExecutor node;
+    private String[] camID;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -103,8 +124,6 @@ public class MainActivity extends RosActivity
                 case LoaderCallbackInterface.SUCCESS:
                 {
                     Log.i("Finally", "OpenCV loaded successfully");
-                    mOpenCvCameraView.enableView();
-                    mOpenCvCameraView2.enableView();
                 } break;
                 default:
                 {
@@ -130,6 +149,7 @@ public class MainActivity extends RosActivity
             mOpenCvCameraView2.disableView();
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -139,17 +159,37 @@ public class MainActivity extends RosActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
 
+        if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED
+                || checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)==PackageManager.PERMISSION_DENIED
+                || checkSelfPermission(Manifest.permission.CAMERA)==PackageManager.PERMISSION_DENIED
+                || checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_DENIED) {
+                requestPermissions(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.CAMERA,
+                                Manifest.permission.ACCESS_FINE_LOCATION},
+                    1);
+        }
+
+        CameraManager manager;
+        manager=(CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        try {
+            camID=manager.getCameraIdList();
+            for(int i=0;i<camID.length;i++){
+                float[] a=manager.getCameraCharacteristics(camID[i]).get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+                for(int j=0;j<a.length;j++)
+                    Log.d("hola",a[j]+"x"+camID[i]);
+            }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(cam_pub);
-        mOpenCvCameraView.setCameraIndex(mCameraId);
-        mOpenCvCameraView.setCameraPermissionGranted();
 
         mOpenCvCameraView2 = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView2);
         mOpenCvCameraView2.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView2.setCvCameraViewListener(cam_pub2);
-        mOpenCvCameraView2.setCameraIndex(mCameraId+1);
-        mOpenCvCameraView2.setCameraPermissionGranted();
 
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
         mSensorManager = (SensorManager)this.getSystemService(SENSOR_SERVICE);
@@ -177,93 +217,227 @@ public class MainActivity extends RosActivity
     }
 
     @Override
-    protected void init(NodeMainExecutor nodeMainExecutor)
+    protected void init(final NodeMainExecutor nodeMainExecutor)
     {
-        node=nodeMainExecutor;
-        URI masterURI = getMasterUri();
+        final URI masterURI = getMasterUri();
         //masterURI = URI.create("http://192.168.15.247:11311/");
         //masterURI = URI.create("http://10.0.1.157:11311/");
+        final MainActivity mainActivity=this;
 
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-
-        int sensorDelay = 20000; // 20,000 us == 50 Hz for Android 3.1 and above
         if(currentapiVersion <= android.os.Build.VERSION_CODES.HONEYCOMB){
             sensorDelay = SensorManager.SENSOR_DELAY_UI; // 16.7Hz for older devices.  They only support enum values, not the microsecond version.
         }
 
-        @SuppressWarnings("deprecation")
+        final CheckBox camera1Box=findViewById(R.id.camera1_box);
+        final EditText camera1Text=findViewById(R.id.camera1_text);
+        final EditText camID1=findViewById(R.id.camID1);
+        camera1Box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(camera1Box.isChecked()){
+                    camera1Text.setFocusable(false);
+                    camID1.setFocusable(false);
+                    if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                        mOpenCvCameraView.enableView();
+                        NodeConfiguration nodeConfiguration7 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+                        nodeConfiguration7.setMasterUri(masterURI);
+                        cam_pub.mainActivity = mainActivity;
+                        if(!camera1Text.getText().toString().isEmpty())
+                            cam_pub.topic = camera1Text.getText().toString();
+                        else
+                            cam_pub.topic="android/camera1";
+                        if(!camID1.getText().toString().isEmpty() && Arrays.asList(camID).contains(camID1.getText().toString()))
+                            cam_pub.cameraID = Arrays.asList(camID).indexOf(camID1.getText().toString());
+                        else
+                            cam_pub.cameraID=mCameraId1;
+                        nodeConfiguration7.setNodeName("android_sensors_driver_camera1"+cam_pub.cameraID);
+                        mOpenCvCameraView.setCameraIndex(cam_pub.cameraID);
+                        if(Arrays.asList(camID).contains(cam_pub.cameraID+"")){
+                            mOpenCvCameraView.setCameraPermissionGranted();
+                            nodeMainExecutor.execute(cam_pub, nodeConfiguration7);
+                        }
+                    }
+                }
+                else{
+                    camera1Text.setFocusableInTouchMode(true);
+                    camID1.setFocusableInTouchMode(true);
+                    nodeMainExecutor.shutdownNodeMain(cam_pub);
+                    mOpenCvCameraView.disableView();
+                }
+            }
+        });
+
+        final CheckBox camera2Box=findViewById(R.id.camera2_box);
+        final EditText camera2Text=findViewById(R.id.camera2_text);
+        final EditText camID2=findViewById(R.id.camID2);
+        camera2Box.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(camera2Box.isChecked()){
+                    camera2Text.setFocusable(false);
+                    camID2.setFocusable(false);
+                    if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                        mOpenCvCameraView2.enableView();
+                        NodeConfiguration nodeConfiguration7 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+                        nodeConfiguration7.setMasterUri(masterURI);
+                        cam_pub2.mainActivity = mainActivity;
+                        if(!camera2Text.getText().toString().isEmpty())
+                            cam_pub2.topic = camera2Text.getText().toString();
+                        else
+                            cam_pub2.topic="android/camera2";
+                        if(!camID2.getText().toString().isEmpty() && Arrays.asList(camID).contains(camID2.getText().toString()))
+                            cam_pub2.cameraID = Arrays.asList(camID).indexOf(camID2.getText().toString());
+                        else
+                            cam_pub2.cameraID=mCameraId2;
+                        nodeConfiguration7.setNodeName("android_sensors_driver_camera2"+cam_pub2.cameraID);
+                        mOpenCvCameraView2.setCameraIndex(cam_pub2.cameraID);
+                        if(Arrays.asList(camID).contains(cam_pub2.cameraID+"")){
+                            mOpenCvCameraView2.setCameraPermissionGranted();
+                            nodeMainExecutor.execute(cam_pub2, nodeConfiguration7);
+                        }
+                    }
+                }
+                else{
+                    camera2Text.setFocusableInTouchMode(true);
+                    camID2.setFocusableInTouchMode(true);
+                    nodeMainExecutor.shutdownNodeMain(cam_pub2);
+                    mOpenCvCameraView2.disableView();
+                }
+            }
+        });
+
+        final CheckBox imuBox=findViewById(R.id.imu_box);
+        final EditText imuText=findViewById(R.id.imu_text);
+        imuBox.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(imuBox.isChecked()){
+                    imuText.setFocusable(false);
+                    if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                        NodeConfiguration nodeConfiguration3 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+                        nodeConfiguration3.setMasterUri(masterURI);
+                        nodeConfiguration3.setNodeName("android_sensors_driver_imu");
+                        imu_pub = new ImuPublisher(mSensorManager, sensorDelay);
+                        if (!imuText.getText().toString().isEmpty())
+                            imu_pub.topic = imuText.getText().toString();
+                        else
+                            imu_pub.topic = "android/imu";
+                        nodeMainExecutor.execute(imu_pub, nodeConfiguration3);
+                    }
+                }
+                else{
+                    imuText.setFocusableInTouchMode(true);
+                    nodeMainExecutor.shutdownNodeMain(imu_pub);
+                }
+            }
+        });
+
+        final CheckBox fixBox=findViewById(R.id.gps_box);
+        final EditText fixText=findViewById(R.id.gps_text);
+        fixBox.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                if(fixBox.isChecked()){
+                    fixText.setFocusable(false);
+                    if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD) {
+                        NodeConfiguration nodeConfiguration2 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
+                        nodeConfiguration2.setMasterUri(masterURI);
+                        nodeConfiguration2.setNodeName("android_sensors_driver_nav_sat_fix");
+                        fix_pub = new NavSatFixPublisher(mLocationManager);
+                        fix_pub.mainActivity = mainActivity;
+                        if (!fixText.getText().toString().isEmpty())
+                            fix_pub.topic = fixText.getText().toString();
+                        else
+                            fix_pub.topic = "android/fix";
+                        nodeMainExecutor.execute(fix_pub, nodeConfiguration2);
+                    }
+                }
+                else{
+                    fixText.setFocusableInTouchMode(true);
+                    nodeMainExecutor.shutdownNodeMain(fix_pub);
+                }
+            }
+        });
+
+        /*@SuppressWarnings("deprecation")
         int tempSensor = Sensor.TYPE_TEMPERATURE; // Older temperature
         if(currentapiVersion <= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH){
             tempSensor = Sensor.TYPE_AMBIENT_TEMPERATURE; // Use newer temperature if possible
-        }
+        }*/
 
-
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration.setMasterUri(masterURI);
             nodeConfiguration.setNodeName("android_sensors_driver_magnetic_field");
             this.magnetic_field_pub = new MagneticFieldPublisher(mSensorManager, sensorDelay);
+            magnetic_field_pub.topic="android/magnetic_field";
             nodeMainExecutor.execute(this.magnetic_field_pub, nodeConfiguration);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration2 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration2.setMasterUri(masterURI);
             nodeConfiguration2.setNodeName("android_sensors_driver_nav_sat_fix");
             this.fix_pub = new NavSatFixPublisher(mLocationManager);
             fix_pub.mainActivity=this;
+            fix_pub.topic="android/fix";
             nodeMainExecutor.execute(this.fix_pub, nodeConfiguration2);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration3 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration3.setMasterUri(masterURI);
             nodeConfiguration3.setNodeName("android_sensors_driver_imu");
             this.imu_pub = new ImuPublisher(mSensorManager, sensorDelay);
+            imu_pub.topic="android/imu";
             nodeMainExecutor.execute(this.imu_pub, nodeConfiguration3);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration4 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration4.setMasterUri(masterURI);
             nodeConfiguration4.setNodeName("android_sensors_driver_pressure");
             this.fluid_pressure_pub = new FluidPressurePublisher(mSensorManager, sensorDelay);
             nodeMainExecutor.execute(this.fluid_pressure_pub, nodeConfiguration4);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration5 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration5.setMasterUri(masterURI);
             nodeConfiguration5.setNodeName("android_sensors_driver_illuminance");
             this.illuminance_pub = new IlluminancePublisher(mSensorManager, sensorDelay);
             nodeMainExecutor.execute(this.illuminance_pub, nodeConfiguration5);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
             NodeConfiguration nodeConfiguration6 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration6.setMasterUri(masterURI);
             nodeConfiguration6.setNodeName("android_sensors_driver_temperature");
             this.temperature_pub = new TemperaturePublisher(mSensorManager, sensorDelay, tempSensor);
             nodeMainExecutor.execute(this.temperature_pub, nodeConfiguration6);
-        }
+        }*/
 
-        if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
-            mOpenCvCameraView.enableView();
+        /*if(currentapiVersion >= android.os.Build.VERSION_CODES.GINGERBREAD){
+            mOpenCvCameraView.setCameraIndex(mCameraId1);
+            mOpenCvCameraView.setCameraPermissionGranted();
             NodeConfiguration nodeConfiguration7 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration7.setMasterUri(masterURI);
             nodeConfiguration7.setNodeName("android_sensors_driver_camera");
             cam_pub.mainActivity = this;
             cam_pub.topic="android/camera1";
+            cam_pub.cameraID=mCameraId1;
             nodeMainExecutor.execute(this.cam_pub, nodeConfiguration7);
 
-            mOpenCvCameraView2.enableView();
+            mOpenCvCameraView2.setCameraIndex(mCameraId2);
+            mOpenCvCameraView2.setCameraPermissionGranted();
             NodeConfiguration nodeConfiguration8 = NodeConfiguration.newPublic(InetAddressFactory.newNonLoopback().getHostAddress());
             nodeConfiguration8.setMasterUri(masterURI);
             nodeConfiguration8.setNodeName("android_sensors_driver_camera2");
             cam_pub2.mainActivity = this;
             cam_pub2.topic="android/camera2";
+            cam_pub2.cameraID=mCameraId2;
             nodeMainExecutor.execute(this.cam_pub2, nodeConfiguration8);
-        }
+        }*/
     }
 
     public enum eScreenOrientation

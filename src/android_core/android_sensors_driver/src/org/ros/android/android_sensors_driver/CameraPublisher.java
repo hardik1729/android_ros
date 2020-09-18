@@ -86,6 +86,7 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
     protected final int FRONT = Camera.CameraInfo.CAMERA_FACING_FRONT;
     public MainActivity mainActivity;
     public String topic="android/camera";
+    public int cameraID=0;
 
     public CameraPublisher() {
     }
@@ -147,7 +148,7 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
         if (null != node && null != frame) {
 
             //noinspection deprecation
-            android.hardware.Camera.getCameraInfo(MainActivity.mCameraId, info);
+            android.hardware.Camera.getCameraInfo(cameraID, info);
             if (info.facing == FRONT)
             {
                 flip(frame, frame,1);

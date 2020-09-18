@@ -64,6 +64,7 @@ public class NavSatFixPublisher implements NodeMain {
 	private NavSatListener navSatFixListener;
 	private Publisher<NavSatFix> publisher;
 	public MainActivity mainActivity;
+	public String topic="android/fix";
 
 	private class NavSatThread extends Thread {
 		LocationManager locationManager;
@@ -166,7 +167,7 @@ public void onStart(ConnectedNode node)
 {
   try
   {
-	this.publisher = node.newPublisher("android/fix", "sensor_msgs/NavSatFix");
+	this.publisher = node.newPublisher(topic, "sensor_msgs/NavSatFix");
   	this.navSatFixListener = new NavSatListener(publisher);
   	this.navSatThread = new NavSatThread(this.locationManager, this.navSatFixListener);
   	this.navSatThread.start();
