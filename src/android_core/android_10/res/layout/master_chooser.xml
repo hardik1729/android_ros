@@ -35,13 +35,13 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
 
-        <Button
-            android:id="@+id/master_chooser_qr_code_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="qrCodeButtonClicked"
-            android:text="@string/qr_code"/>
+<!--        <Button-->
+<!--            android:id="@+id/master_chooser_qr_code_button"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:onClick="qrCodeButtonClicked"-->
+<!--            android:text="@string/qr_code"/>-->
 
         <Button
             android:id="@+id/master_chooser_ok"
@@ -111,13 +111,13 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/master_chooser_cancel"
-        style="@style/padded"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:onClick="cancelButtonClicked"
-        android:text="@string/cancel"/>
+<!--    <Button-->
+<!--        android:id="@+id/master_chooser_cancel"-->
+<!--        style="@style/padded"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        android:onClick="cancelButtonClicked"-->
+<!--        android:text="@string/cancel"/>-->
 
 </LinearLayout>

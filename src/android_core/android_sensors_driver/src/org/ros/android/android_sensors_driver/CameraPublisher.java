@@ -30,9 +30,15 @@
 
 package org.ros.android.android_sensors_driver;
 
+import android.annotation.TargetApi;
+import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.util.Log;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.jboss.netty.buffer.ChannelBufferOutputStream;
 import org.opencv.android.CameraActivity;
 import org.opencv.android.CameraBridgeViewBase;
@@ -127,6 +133,7 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
     public void onCameraViewStopped() {
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
         Mat         frame       = null;
@@ -202,6 +209,35 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
                 cameraInfo.getHeader().setStamp(currentTime);
                 cameraInfo.setWidth(cols);
                 cameraInfo.setHeight(rows);
+                float[] k=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_INTRINSIC_CALIBRATION);
+                if(k!=null && k.length>=5){
+                    double[] K=new double[9];
+                    K[0]=Double.valueOf(k[0]);
+                    K[1]=Double.valueOf(k[4]);
+                    K[2]=Double.valueOf(k[2]);
+                    K[3]=0;
+                    K[4]=Double.valueOf(k[1]);
+                    K[5]=Double.valueOf(k[3]);
+                    K[6]=0;
+                    K[7]=0;
+                    K[8]=1;
+                    cameraInfo.setK(K);
+                }
+                float[] d=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
+                if(d!=null){
+                    double[] D=new double[d.length];
+                    for(int i=0;i<d.length;i++)
+                        D[i]=Double.valueOf(d[i]);
+                    cameraInfo.setD(D);
+                }
+                float[] f=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+                if(f!=null){
+                    String focal_length="focal_lengths : ";
+                    for(int i=0;i<f.length;i++)
+                        focal_length=focal_length+f[i]+", ";
+                    cameraInfo.setDistortionModel(focal_length);
+                }
+
                 cameraInfoPublisher.publish(cameraInfo);
 
 

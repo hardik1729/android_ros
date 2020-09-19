@@ -234,7 +234,7 @@ public class MasterChooser extends Activity {
     });
   }
 
-  public void qrCodeButtonClicked(View unused) {
+  /*public void qrCodeButtonClicked(View unused) {
     Intent intent = new Intent(BAR_CODE_SCANNER_PACKAGE_NAME);
     intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
     // Check if the Barcode Scanner is installed.
@@ -247,7 +247,7 @@ public class MasterChooser extends Activity {
       // Call the Barcode Scanner to let the user scan a QR code.
       startActivityForResult(intent, 0);
     }
-  }
+  }*/
 
   public void advancedCheckboxClicked(View view) {
     boolean checked = ((CheckBox) view).isChecked();
@@ -279,10 +279,10 @@ public class MasterChooser extends Activity {
     finish();
   }
 
-  public void cancelButtonClicked(View unused) {
+  /*public void cancelButtonClicked(View unused) {
     setResult(RESULT_CANCELED);
     finish();
-  }
+  }*/
 
   /**
    * Check if the specified app is installed.
@@ -292,9 +292,9 @@ public class MasterChooser extends Activity {
    * @return true if the desired activity is install on the device, false
    *         otherwise.
    */
-  protected boolean isQRCodeReaderInstalled(Intent intent) {
+  /*protected boolean isQRCodeReaderInstalled(Intent intent) {
     List<ResolveInfo> list =
         getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
     return (list.size() > 0);
-  }
+  }*/
 }

@@ -117,6 +117,7 @@ public class MainActivity extends RosActivity
 
     private LocationManager mLocationManager;
     private SensorManager mSensorManager;
+    CameraManager manager;
 
     private String[] camID;
 
@@ -173,7 +174,6 @@ public class MainActivity extends RosActivity
                     1);
         }
 
-        CameraManager manager;
         manager=(CameraManager)getSystemService(Context.CAMERA_SERVICE);
         try {
             camID=manager.getCameraIdList();
@@ -361,6 +361,13 @@ public class MainActivity extends RosActivity
                     fixText.setFocusableInTouchMode(true);
                     nodeMainExecutor.shutdownNodeMain(fix_pub);
                 }
+            }
+        });
+
+        findViewById(R.id.shutdown).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                nodeMainExecutor.shutdown();
             }
         });
 

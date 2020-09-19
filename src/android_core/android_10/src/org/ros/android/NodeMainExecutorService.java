@@ -140,7 +140,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
 
   @Override
   public void shutdown() {
-    handler.post(new Runnable() {
+    /*handler.post(new Runnable() {
       @Override
       public void run() {
         AlertDialog.Builder builder = new AlertDialog.Builder(NodeMainExecutorService.this);
@@ -160,7 +160,8 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
         alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         alertDialog.show();
       }
-    });
+    });*/
+      forceShutdown();
   }
 
   public void forceShutdown() {
