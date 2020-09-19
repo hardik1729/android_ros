@@ -53,6 +53,8 @@ import org.ros.node.Node;
 import org.ros.node.NodeMain;
 import org.ros.node.topic.Publisher;
 
+import java.util.List;
+
 /**
  * @author chadrockey@gmail.com (Chad Rockey)
  * @author axelfurlan@gmail.com (Axel Furlan)
@@ -90,7 +92,9 @@ public class NavSatFixPublisher implements NodeMain {
 				// for Activity#requestPermissions for more details.
 				return;
 			}
-			this.locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this.navSatListener);
+			List<String> providers=locationManager.getAllProviders();
+			for(String provider : providers)
+				this.locationManager.requestLocationUpdates(provider, 0, 0, this.navSatListener);
 			Looper.loop();
 	    }
 	    

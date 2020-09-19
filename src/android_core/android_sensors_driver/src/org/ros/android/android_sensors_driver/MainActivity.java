@@ -48,6 +48,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -56,6 +57,7 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.ros.address.InetAddressFactory;
 import org.ros.android.RosActivity;
+import org.ros.android.view.RosTextView;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 
@@ -65,6 +67,7 @@ import android.view.SubMenu;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.MenuInflater;
+import android.widget.ToggleButton;
 
 import java.lang.reflect.Array;
 import java.net.URI;
@@ -179,6 +182,8 @@ public class MainActivity extends RosActivity
                 for(int j=0;j<a.length;j++)
                     Log.d("hola",a[j]+"x"+camID[i]);
             }
+            TextView rosCamNo=findViewById(R.id.text);
+            rosCamNo.setText("Number Of Cams : "+camID.length);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
