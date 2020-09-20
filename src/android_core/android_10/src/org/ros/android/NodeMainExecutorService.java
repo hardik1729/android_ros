@@ -166,7 +166,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
 
   public void forceShutdown() {
     signalOnShutdown();
-    stopForeground(true);
+//    stopForeground(true);
     stopSelf();
   }
 
@@ -204,7 +204,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
     super.onDestroy();
   }
 
-  @Override
+  /*@Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent.getAction() == null) {
       return START_NOT_STICKY;
@@ -226,7 +226,7 @@ public class NodeMainExecutorService extends Service implements NodeMainExecutor
       shutdown();
     }
     return START_NOT_STICKY;
-  }
+  }*/
 
   @Override
   public IBinder onBind(Intent intent) {

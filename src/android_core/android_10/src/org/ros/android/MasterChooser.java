@@ -166,7 +166,7 @@ public class MasterChooser extends Activity {
     uriText.setText(uri);
   }
 
-  @Override
+  /*@Override
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     // If the Barcode Scanner returned a string then display that string.
     if (requestCode == 0) {
@@ -178,7 +178,7 @@ public class MasterChooser extends Activity {
         uriText.setText(contents);
       }
     }
-  }
+  }*/
 
   public void okButtonClicked(View unused) {
     // Prevent further edits while we verify the URI.
