@@ -99,7 +99,7 @@ public class MainActivity extends RosActivity
     public static int imageJPEGCompressionQuality = 100;
     public static int imagePNGCompressionQuality = 1;
 
-    private int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+    public int currentapiVersion = android.os.Build.VERSION.SDK_INT;
     private int sensorDelay = 20000; // 20,000 us == 50 Hz for Android 3.1 and above
 
     public static int mCameraId1 = 0;
@@ -175,15 +175,26 @@ public class MainActivity extends RosActivity
         }
 
         manager=(CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        String totalCams="";
         try {
             camID=manager.getCameraIdList();
             for(int i=0;i<camID.length;i++){
                 float[] a=manager.getCameraCharacteristics(camID[i]).get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
                 for(int j=0;j<a.length;j++)
                     Log.d("hola",a[j]+"x"+camID[i]);
+                if(currentapiVersion >= Build.VERSION_CODES.P){
+                    String[] cams= (String[]) manager.getCameraCharacteristics(camID[i]).getPhysicalCameraIds().toArray();
+                    totalCams=totalCams+camID[i]+":";
+                    for(int j=0;j<cams.length;j++)
+                        totalCams=totalCams+cams[j]+",";
+                    totalCams=totalCams+";";
+                }
             }
             TextView rosCamNo=findViewById(R.id.text);
-            rosCamNo.setText("Number Of Cams : "+camID.length);
+            if(currentapiVersion >= Build.VERSION_CODES.P)
+                rosCamNo.setText("Cams : "+totalCams);
+            else
+                rosCamNo.setText("Number Of Cams : "+camID.length);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -251,16 +262,16 @@ public class MainActivity extends RosActivity
                             cam_pub.topic = camera1Text.getText().toString();
                         else
                             cam_pub.topic="android/camera1";
-                        if(!camID1.getText().toString().isEmpty() && Arrays.asList(camID).contains(camID1.getText().toString()))
-                            cam_pub.cameraID = Arrays.asList(camID).indexOf(camID1.getText().toString());
+                        if(!camID1.getText().toString().isEmpty())// && Arrays.asList(camID).contains(camID1.getText().toString()))
+                            cam_pub.cameraID = Integer.parseInt(camID1.getText().toString());//Arrays.asList(camID).indexOf(camID1.getText().toString());
                         else
                             cam_pub.cameraID=mCameraId1;
                         nodeConfiguration7.setNodeName("android_sensors_driver_camera1"+cam_pub.cameraID);
                         mOpenCvCameraView.setCameraIndex(cam_pub.cameraID);
-                        if(Arrays.asList(camID).contains(cam_pub.cameraID+"")){
+//                        if(Arrays.asList(camID).contains(cam_pub.cameraID+"")){
                             mOpenCvCameraView.setCameraPermissionGranted();
                             nodeMainExecutor.execute(cam_pub, nodeConfiguration7);
-                        }
+//                        }
                     }
                 }
                 else{
@@ -290,16 +301,16 @@ public class MainActivity extends RosActivity
                             cam_pub2.topic = camera2Text.getText().toString();
                         else
                             cam_pub2.topic="android/camera2";
-                        if(!camID2.getText().toString().isEmpty() && Arrays.asList(camID).contains(camID2.getText().toString()))
-                            cam_pub2.cameraID = Arrays.asList(camID).indexOf(camID2.getText().toString());
+                        if(!camID2.getText().toString().isEmpty())// && Arrays.asList(camID).contains(camID2.getText().toString()))
+                            cam_pub2.cameraID = Integer.parseInt(camID2.getText().toString());//Arrays.asList(camID).indexOf(camID2.getText().toString());
                         else
                             cam_pub2.cameraID=mCameraId2;
                         nodeConfiguration7.setNodeName("android_sensors_driver_camera2"+cam_pub2.cameraID);
                         mOpenCvCameraView2.setCameraIndex(cam_pub2.cameraID);
-                        if(Arrays.asList(camID).contains(cam_pub2.cameraID+"")){
+//                        if(Arrays.asList(camID).contains(cam_pub2.cameraID+"")){
                             mOpenCvCameraView2.setCameraPermissionGranted();
                             nodeMainExecutor.execute(cam_pub2, nodeConfiguration7);
-                        }
+//                        }
                     }
                 }
                 else{

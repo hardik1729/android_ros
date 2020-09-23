@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:text="ShutDown"
-        android:textSize="30sp"/>
+        android:textSize="15sp"/>
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/shutdown"
-        android:textSize="30sp"/>
+        android:textSize="15sp"/>
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
@@ -63,6 +63,7 @@
         android:hint="camID"
         android:textColor="#ffffff"
         android:textCursorDrawable="@null"
+        android:inputType="number"
         app:layout_constraintStart_toEndOf="@id/camera1_text"
         app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView" />
     <CheckBox
@@ -112,6 +113,7 @@
         android:hint="camID"
         android:textColor="#ffffff"
         android:textCursorDrawable="@null"
+        android:inputType="number"
         app:layout_constraintStart_toEndOf="@id/camera2_text"
         app:layout_constraintBottom_toTopOf="@id/HelloOpenCvView2" />
     <CheckBox
