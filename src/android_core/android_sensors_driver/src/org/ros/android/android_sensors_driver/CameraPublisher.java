@@ -224,9 +224,9 @@ public class CameraPublisher implements NodeMain, CvCameraViewListener2 {
                     cameraInfo.setK(K);
                 }
                 float[] d;
-                if(mainActivity.currentapiVersion>=Build.VERSION_CODES.P)
-                    d=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_DISTORTION);
-                else
+//                if(mainActivity.currentapiVersion>=Build.VERSION_CODES.P)
+//                    d=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_DISTORTION);
+//                else
                     d=mainActivity.manager.getCameraCharacteristics(cameraID+"").get(CameraCharacteristics.LENS_RADIAL_DISTORTION);
                 if(d!=null){
                     double[] D=new double[d.length];

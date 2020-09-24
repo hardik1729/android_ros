@@ -175,25 +175,25 @@ public class MainActivity extends RosActivity
         }
 
         manager=(CameraManager)getSystemService(Context.CAMERA_SERVICE);
-        String totalCams="";
+//        String totalCams="";
         try {
             camID=manager.getCameraIdList();
             for(int i=0;i<camID.length;i++){
                 float[] a=manager.getCameraCharacteristics(camID[i]).get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
                 for(int j=0;j<a.length;j++)
                     Log.d("hola",a[j]+"x"+camID[i]);
-                if(currentapiVersion >= Build.VERSION_CODES.P){
-                    String[] cams= (String[]) manager.getCameraCharacteristics(camID[i]).getPhysicalCameraIds().toArray();
-                    totalCams=totalCams+camID[i]+":";
-                    for(int j=0;j<cams.length;j++)
-                        totalCams=totalCams+cams[j]+",";
-                    totalCams=totalCams+";";
-                }
+//                if(currentapiVersion >= Build.VERSION_CODES.P){
+//                    String[] cams= (String[]) manager.getCameraCharacteristics(camID[i]).getPhysicalCameraIds().toArray();
+//                    totalCams=totalCams+camID[i]+":";
+//                    for(int j=0;j<cams.length;j++)
+//                        totalCams=totalCams+cams[j]+",";
+//                    totalCams=totalCams+";";
+//                }
             }
             TextView rosCamNo=findViewById(R.id.text);
-            if(currentapiVersion >= Build.VERSION_CODES.P)
-                rosCamNo.setText("Cams : "+totalCams);
-            else
+//            if(currentapiVersion >= Build.VERSION_CODES.P)
+//                rosCamNo.setText("Cams : "+totalCams);
+//            else
                 rosCamNo.setText("Number Of Cams : "+camID.length);
         } catch (CameraAccessException e) {
             e.printStackTrace();

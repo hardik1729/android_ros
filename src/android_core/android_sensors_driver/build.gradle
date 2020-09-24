@@ -32,12 +32,12 @@ apply plugin: 'android'
 /*debug.dependsOn project(':android_gingerbread_mr1').tasks.debug*/
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 26
 
     defaultConfig {
         minSdkVersion 21
         applicationId "org.ros.android.android_sensor_driver"
-        targetSdkVersion 28
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }
