@@ -6,3 +6,4 @@ devel
 src/CMakeLists.txt
 *.log
 *.pyc
+src/android_core/OpenCV-android-sdk
